@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Electronics",
+    "category": "Household Items"
+  },
+  {
+    "name": "Furniture",
+    "category": "Household Items"
+  },
+  {
+    "name": "Kitchen Appliances",
+    "category": "Appliances"
+  },
+  {
+    "name": "Home Appliances",
+    "category": "Appliances"
+  },
+  {
+    "name": "Lighting",
+    "category": "Utilities"
+  },
+  {
+    "name": "Bedding",
+    "category": "Household Items"
+  },
+  {
+    "name": "Clothing",
+    "category": "Personal Items"
+  },
+  {
+    "name": "Footwear",
+    "category": "Personal Items"
+  },
+  {
+    "name": "Storage",
+    "category": "Household Items"
+  },
+  {
+    "name": "Cleaning Tools",
+    "category": "Utilities"
+  },
+  {
+    "name": "Gardening Tools",
+    "category": "Outdoor"
+  },
+  {
+    "name": "Bathroom Items",
+    "category": "Household Items"
+  },
+  {
+    "name": "Decor",
+    "category": "Household Items"
+  }
+]

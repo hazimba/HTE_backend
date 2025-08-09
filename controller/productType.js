@@ -32,3 +32,21 @@ export const getProductType = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch product types" });
   }
 };
+
+export const getProductTypeById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const productType = await sql`
+      SELECT * FROM product_types WHERE id = ${id};
+    `;
+
+    if (productType.length === 0) {
+      return res.status(404).json({ message: "Product type not found" });
+    }
+    res.status(200).json(productType[0]);
+  } catch (error) {
+    console.error("Error fetching product type:", error);
+    res.status(500).json({ error: "Failed to fetch product type" });
+  }
+};

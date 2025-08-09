@@ -9,17 +9,26 @@ import {
 import {
   createProductType,
   getProductType,
+  getProductTypeById,
 } from "../controller/productType.js";
 
-import { getUser, createUser } from "../controller/user.js";
+import {
+  getUser,
+  createUser,
+  deleteUser,
+  getUserById,
+} from "../controller/user.js";
 
 const router = express.Router();
 
-router.route("/product").get(getProduct).post(createProduct); // GET /api/products POST /api/products
-router.route("/product/:id").delete(deleteProduct).patch(updateProduct); // DELETE /api/products/:id PATCH /api/products/:id
+router.route("/product").get(getProduct).post(createProduct);
+// router.route("/product/user/:user_id").get(getProductByUserId);
+router.route("/product/:id").delete(deleteProduct).patch(updateProduct);
 
 router.route("/productType").get(getProductType).post(createProductType);
+router.route("/productType/:id").get(getProductTypeById);
 
 router.route("/user").get(getUser).post(createUser);
+router.route("/user/:id").delete(deleteUser).get(getUserById);
 
 export default router;

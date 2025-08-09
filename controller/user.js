@@ -33,3 +33,42 @@ export const createUser = async (req, res) => {
     res.status(500).json({ error: "Failed to create user" });
   }
 };
+
+export const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await sql`
+      DELETE FROM users
+      WHERE id = ${id}
+      RETURNING *;
+    `;
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+
+export const getUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await sql`
+      SELECT * FROM users WHERE id = ${id};
+    `;
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user[0]);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+};

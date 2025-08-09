@@ -9,7 +9,7 @@ import { sql } from "./config/db.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 app.use(helmet()); // to get built-in security features with various http headers
 app.use(morgan("dev")); // to log HTTP requests in the console

@@ -1,5 +1,7 @@
 import { sql } from "../config/db.js";
 
+// just straight forward CRUD operations for product types
+// no complex logic, just basic operations
 export const createProductType = async (req, res) => {
   console.log("req.body", req.body);
   const { name, category } = req.body;

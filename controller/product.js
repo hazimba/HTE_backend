@@ -17,6 +17,7 @@ export const getProduct = async (req, res) => {
 };
 
 export const getProductByUserId = async (req, res) => {
+  // this need to be same like endpoint /:id !!
   const { id } = req.params;
 
   try {
@@ -47,7 +48,16 @@ export const createProduct = async (req, res) => {
       user_id,
     } = req.body;
 
-    console.log("Creating product with data:", req.body);
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !years ||
+      !product_type_id ||
+      !user_id
+    ) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
     await sql`
       INSERT INTO products (name, description, price, years, product_type_id, condition, is_sold, user_id)
       VALUES (${name}, ${description}, ${price}, ${years}, ${product_type_id}, ${condition}, ${is_sold}, ${user_id});
@@ -72,6 +82,7 @@ export const updateProduct = async (req, res) => {
   } = req.body;
 
   try {
+    // Just update all fields in the product
     const result = await sql`
       UPDATE products
       SET name = ${name}, description = ${description}, price = ${price}, years = ${years}, product_type_id = ${product_type_id}, condition = ${condition}, is_sold = ${is_sold}
@@ -93,6 +104,7 @@ export const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Delete the product by ID, hard delete
     const result = await sql`
       DELETE FROM products WHERE id = ${id};
     `;
@@ -114,6 +126,7 @@ export const getProductFilteredByFavoriteUserId = async (req, res) => {
 
     let query;
 
+    // favorite only store user_id, in order get the products that are favorited by the user
     if (favorite) {
       query = sql`
         SELECT p.* 
@@ -121,8 +134,10 @@ export const getProductFilteredByFavoriteUserId = async (req, res) => {
         INNER JOIN favorite f ON f.product_id = p.id AND f.user_id = ${user_id}
         WHERE 1=1
       `;
+      // if favorite box is not checked, just return query all products
     } else {
       // All products
+      // where 1=1 is a common SQL pattern to simplify appending conditions
       query = sql`
         SELECT p.* 
         FROM products p
@@ -130,6 +145,8 @@ export const getProductFilteredByFavoriteUserId = async (req, res) => {
       `;
     }
 
+    // Append conditions based on provided filters
+    // If name is provided, filter by name
     if (name && name.trim() !== "") {
       query = sql`${query} AND p.name ILIKE ${"%" + name.trim() + "%"}`;
     }
@@ -138,6 +155,10 @@ export const getProductFilteredByFavoriteUserId = async (req, res) => {
       query = sql`${query} AND p.product_type_id = ${product_type_id}`;
     }
 
+    // If condition is provided, filter by condition
+    // Assuming condition is an array of conditions, e.g., ["new", "used"]
+    // If condition is a string, it will be treated as an array with one element
+    // If condition is an array, it will be used with ANY operator
     if (
       condition &&
       ((Array.isArray(condition) && condition.length > 0) ||

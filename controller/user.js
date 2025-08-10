@@ -1,5 +1,7 @@
 import { sql } from "../config/db.js";
 
+// just straight forward CRUD operations for users
+// no complex logic, just basic operations
 export const getUser = async (req, res) => {
   try {
     const users = await sql`

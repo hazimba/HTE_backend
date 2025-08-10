@@ -1,9 +1,6 @@
 import { sql } from "../config/db.js";
 
 export const getFavorites = async (req, res) => {
-  const { id } = req.params;
-  // console.log("Fetching favorites for user:", id);
-
   try {
     const favorite = await sql`
         SELECT * FROM favorite
@@ -20,13 +17,10 @@ export const getFavorites = async (req, res) => {
 
 export const getFavoritesByUserId = async (req, res) => {
   const { user_id } = req.params;
-  // console.log("Fetching favorites for user:", user_id);
   try {
     const favorites = await sql`
         SELECT * FROM favorite WHERE user_id = ${user_id};
         `;
-    // console.log("favorites123", favorites);
-    // console.log("favorites123", favorites.length);
     if (favorites.length === 0) {
       return res
         .status(404)
@@ -42,6 +36,15 @@ export const getFavoritesByUserId = async (req, res) => {
 export const toggleFavorite = async (req, res) => {
   const { product_id, user_id } = req.body;
 
+  // Check if product_id and user_id are provided
+  if (!product_id || !user_id) {
+    return res
+      .status(400)
+      .json({ error: "product_id and user_id are required" });
+  }
+
+  // Check if the favorite already exists
+  // As this is a toggle operation, straight up create and delete more convenient
   try {
     const existing = await sql`
         SELECT * FROM favorite
@@ -49,6 +52,7 @@ export const toggleFavorite = async (req, res) => {
       `;
 
     let result;
+    // If it exists, delete it;
     if (existing.length > 0) {
       result = await sql`
           DELETE FROM favorite
@@ -57,6 +61,7 @@ export const toggleFavorite = async (req, res) => {
         `;
       res.status(200).json({ status: "removed", data: result[0] });
     } else {
+      // if not, create it
       result = await sql`
           INSERT INTO favorite (product_id, user_id)
           VALUES (${product_id}, ${user_id})

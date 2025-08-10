@@ -2,6 +2,9 @@ import fs from "fs";
 import { sql } from "../db.js";
 
 export async function seedUsers() {
+  // Read users from JSON file and insert them into the database
+  // This is a one-time operation to populate the users table
+  // Ensure the JSON file exists and contains valid data
   try {
     const users = JSON.parse(
       fs.readFileSync("config/user/users.json", "utf-8")

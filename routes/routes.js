@@ -5,6 +5,7 @@ import {
   deleteProduct,
   updateProduct,
   getProductFilteredByFavoriteUserId,
+  getProductByUserId,
 } from "../controller/product.js";
 
 import {
@@ -29,6 +30,7 @@ import {
 const router = express.Router();
 
 router.route("/product").get(getProduct).post(createProduct);
+router.route("/product/user/:id").get(getProductByUserId);
 router.route("/product/filter").post(getProductFilteredByFavoriteUserId);
 // router.route("/product/user/:user_id").get(getProductByUserId);
 router.route("/product/:id").delete(deleteProduct).patch(updateProduct);

@@ -22,7 +22,12 @@ app.use(morgan("dev"));
 // to allow cross-origin requests, enables the backend to accept requests from the frontend
 // this project is not using any frontend, but it's a good practice to include it
 // in case you want to connect a frontend later
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://hte-frontend.vercel.app",
+    credentials: true,
+  })
+);
 
 // to parse JSON request bodies
 app.use(express.json());

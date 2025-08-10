@@ -12,7 +12,10 @@ export const getProduct = async (req, res) => {
       whereClauses.push(sql`user_id = ${user_id}`);
     }
     if (condition) {
-      whereClauses.push(sql`condition = ${condition}`);
+      const typeArray = Array.isArray(condition)
+        ? condition
+        : condition.split(",");
+      whereClauses.push(sql`condition = ANY(${typeArray})`);
     }
     if (product_type_id) {
       const typeArray = Array.isArray(product_type_id)
@@ -120,5 +123,55 @@ export const deleteProduct = async (req, res) => {
   } catch (error) {
     console.error("Error deleting product:", error);
     res.status(500).json({ error: "Failed to delete product" });
+  }
+};
+
+export const getProductFilteredByFavoriteUserId = async (req, res) => {
+  try {
+    const { name, product_type_id, condition, favorite, user_id } = req.body;
+
+    let query;
+
+    if (favorite) {
+      query = sql`
+        SELECT p.* 
+        FROM products p
+        INNER JOIN favorite f ON f.product_id = p.id AND f.user_id = ${user_id}
+        WHERE 1=1
+      `;
+    } else {
+      // All products
+      query = sql`
+        SELECT p.* 
+        FROM products p
+        WHERE 1=1
+      `;
+    }
+
+    if (name && name.trim() !== "") {
+      query = sql`${query} AND p.name ILIKE ${"%" + name.trim() + "%"}`;
+    }
+
+    if (product_type_id && product_type_id !== "") {
+      query = sql`${query} AND p.product_type_id = ${product_type_id}`;
+    }
+
+    if (
+      condition &&
+      ((Array.isArray(condition) && condition.length > 0) ||
+        typeof condition === "string")
+    ) {
+      const condArray = Array.isArray(condition) ? condition : [condition];
+      query = sql`${query} AND p.condition = ANY(${condArray})`;
+    }
+
+    query = sql`${query} ORDER BY p.created_at DESC`;
+
+    const products = await query;
+
+    return res.status(200).json(products);
+  } catch (err) {
+    console.error("Error filtering products:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };

@@ -3,6 +3,10 @@ import { seedUsers } from "./user/seedUsers.js";
 import { seedProductTypes } from "./productTypes/seedProductTypes.js";
 
 async function initDB() {
+  // Initialize the database with necessary tables and seed data
+  // This function should be called once to set up the database schema and initial data
+  // Ensure that the database connection is established before running this function
+  // Can be create in website or in the terminal
   try {
     await sql`
       CREATE TABLE IF NOT EXISTS users (
@@ -40,6 +44,9 @@ async function initDB() {
 
     console.log("Database initialized successfully");
 
+    // after creating the tables, seed the database with initial data
+    // this is a one-time operation to populate the database with initial data
+    // ensure the JSON files exist and contain valid data
     await seedUsers();
     await seedProductTypes();
     console.log("Database seeded successfully");

@@ -11,12 +11,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-app.use(helmet()); // to get built-in security features with various http headers
-app.use(morgan("dev")); // to log HTTP requests in the console
-app.use(cors()); // to allow cross-origin requests, enables the backend to accept requests from the frontend
+// to get built-in security features with various http headers
+app.use(helmet());
 
-app.use(express.json()); // to parse JSON request bodies
-app.use("/api/hte", routes); // Mount the routes under /api
+// to log HTTP requests in the console
+// this is useful for debugging and monitoring
+// eg POST /api/hte/product 201
+app.use(morgan("dev"));
+
+// to allow cross-origin requests, enables the backend to accept requests from the frontend
+// this project is not using any frontend, but it's a good practice to include it
+// in case you want to connect a frontend later
+app.use(cors());
+
+// to parse JSON request bodies
+app.use(express.json());
+
+// Mount the routes under /api
+app.use("/api/hte", routes);
 
 app.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);

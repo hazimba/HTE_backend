@@ -11,6 +11,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://hte-frontend.vercel.app"]
+    : ["http://localhost:3000", "https://hte-frontend.vercel.app"];
+
 // to get built-in security features with various http headers
 app.use(helmet());
 
@@ -24,7 +29,7 @@ app.use(morgan("dev"));
 // in case you want to connect a frontend later
 app.use(
   cors({
-    origin: "https://hte-frontend.vercel.app",
+    origin: allowedOrigins,
     credentials: true,
   })
 );

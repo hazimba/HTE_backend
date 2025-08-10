@@ -1,54 +1,36 @@
 import { sql } from "../config/db.js";
 
 export const getProduct = async (req, res) => {
-  console.log("Fetching products", req.query);
-  const { user_id, condition, product_type_id, name } = req.query;
-
   try {
-    let whereClauses = [];
-    let params = [];
-
-    if (user_id) {
-      whereClauses.push(sql`user_id = ${user_id}`);
-    }
-    if (condition) {
-      const typeArray = Array.isArray(condition)
-        ? condition
-        : condition.split(",");
-      whereClauses.push(sql`condition = ANY(${typeArray})`);
-    }
-    if (product_type_id) {
-      const typeArray = Array.isArray(product_type_id)
-        ? product_type_id
-        : product_type_id.split(",");
-      whereClauses.push(sql`product_type_id = ANY(${typeArray})`);
-    }
-    if (name) {
-      whereClauses.push(sql`name ILIKE ${"%" + name + "%"}`);
-    }
-
-    let query;
-    if (whereClauses.length > 0) {
-      const combinedWhere = whereClauses.reduce((acc, clause, idx) => {
-        if (idx === 0) return clause;
-        return sql`${acc} AND ${clause}`;
-      });
-      query = sql`SELECT * FROM products WHERE ${combinedWhere} ORDER BY created_at DESC`;
-    } else {
-      query = sql`SELECT * FROM products ORDER BY created_at DESC`;
-    }
-
-    console.log("Executing query:", query);
-    const products = await query;
-
+    const products = await sql`
+      SELECT * FROM products
+      ORDER BY created_at DESC
+    `;
     if (products.length === 0) {
-      return res.status(404).json({ message: "No products found" });
+      return res.status(404).json({ message: "No productss found" });
     }
-
     res.status(200).json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ error: "Failed to fetch products" });
+  }
+};
+
+export const getProductByUserId = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const product = await sql`
+      SELECT * FROM products WHERE user_id = ${id} 
+      ORDER BY created_at DESC
+    `;
+    if (product.length === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json(product);
+  } catch (error) {
+    console.error("Error fetching product by ID:", error);
+    res.status(500).json({ error: "Failed to fetch product" });
   }
 };
 

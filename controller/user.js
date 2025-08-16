@@ -19,14 +19,46 @@ export const getUser = async (req, res) => {
   }
 };
 
+// macam tak pakai but lazy to check just push as long it works
+export const getUserByEmail = async (req, res) => {
+  const { email } = req.params;
+  try {
+    const user = await sql`
+      SELECT * FROM users WHERE email = ${email};
+    `;
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user[0]);
+  } catch (error) {
+    console.error("Error fetching user by email:", error);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+};
+
 export const createUser = async (req, res) => {
   try {
-    const { name, phone, email } = req.body;
+    console.log("Received request to create user:", req.body);
+    const { name, phone, email, change_role_request, role } = req.body;
+
+    const existingUser = await sql`
+      SELECT * FROM users WHERE email = ${email};
+    `;
+    console.log("Existing user check result:", existingUser);
+    if (existingUser.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "User with this email already exists" });
+    }
+    if (!name || !phone || !email) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
     console.log("Creating user with data:", req.body);
     await sql`
-        INSERT INTO users (name, phone, email)
-        VALUES (${name}, ${phone}, ${email})
+        INSERT INTO users (name, phone, email, change_role_request, role)
+        VALUES (${name}, ${phone}, ${email}, ${change_role_request}, ${role})
         RETURNING *;
         `;
     res.status(201).json({ message: "User created successfully" });
@@ -58,7 +90,7 @@ export const deleteUser = async (req, res) => {
 };
 
 export const getUserById = async (req, res) => {
-  const { id } = req.params;
+  const { id, email } = req.params;
 
   try {
     const user = await sql`

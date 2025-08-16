@@ -68,6 +68,30 @@ export const createUser = async (req, res) => {
   }
 };
 
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+
+  const { name, phone, email, change_role_request, role } = req.body;
+  console.log("req.body", req.body);
+  try {
+    const result = await sql`
+      UPDATE users
+      SET name = ${name}, phone = ${phone}, email = ${email}, change_role_request = ${change_role_request}, role = ${role}
+      WHERE id = ${id}
+      RETURNING *;
+    `;
+    if (result.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res
+      .status(200)
+      .json({ message: "User updated successfully", user: result[0] });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Failed to update user" });
+  }
+};
+
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
 

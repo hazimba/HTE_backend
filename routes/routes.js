@@ -20,6 +20,7 @@ import {
   deleteUser,
   getUserById,
   getUserByEmail,
+  updateUser,
 } from "../controller/user.js";
 
 import {
@@ -42,8 +43,8 @@ router.route("/productType/:id").get(getProductTypeById);
 
 // user
 router.route("/user").get(getUser).post(createUser);
-router.route("/user/email/:email").get(getUserByEmail);
-router.route("/user/:id").delete(deleteUser).get(getUserById);
+// router.route("/user/email/:email").get(getUserByEmail);
+router.route("/user/:id").delete(deleteUser).get(getUserById).patch(updateUser);
 
 // favorite
 router.route("/favorite/toggle").post(toggleFavorite);
